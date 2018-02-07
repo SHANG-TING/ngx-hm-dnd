@@ -3,6 +3,7 @@ import { NgxHmDndDirective } from './ngx-hm-dnd.directive';
 
 interface NgxHmDndInfo {
   id?: number;
+  group: string;
   container: HTMLElement;
   data: Array<any>;
   directive: NgxHmDndDirective;
@@ -19,8 +20,12 @@ export class NgxHmDndService {
     return this._infos;
   }
 
-  get(event: HammerInput): NgxHmDndInfo {
+  get(event: HammerInput, group: string): NgxHmDndInfo {
     return this._infos.filter(x => {
+      if (x.group !== group) {
+        return false;
+      }
+
       const rect = x.container.getBoundingClientRect();
 
       return rect.left < event.center.x && event.center.x < rect.right

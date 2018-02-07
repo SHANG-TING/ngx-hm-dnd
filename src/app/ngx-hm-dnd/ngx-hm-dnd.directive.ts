@@ -34,6 +34,7 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.service.add({
+      group: this.ngxHmDnd,
       container: this.container,
       data: this.sourceData,
       directive: this
@@ -82,7 +83,7 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
 
       this.movingNode.style.transform = `translate(${event.deltaX}px, ${event.deltaY}px`;
 
-      const currentArea = this.service.get(event);
+      const currentArea = this.service.get(event, this.ngxHmDnd);
 
       // const nodeList = container.querySelectorAll('*:not(#moving_clone_obj)') as NodeListOf<HTMLElement>;
       // for (let i = 0; i < nodeList.length; i++) {
@@ -149,7 +150,7 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
 
           // this.sortComplete.emit(this.sourceObj);
         } else {
-          const currentArea = this.service.get(event);
+          const currentArea = this.service.get(event, this.ngxHmDnd);
 
           if (currentArea) {
             const cloneData = this.sourceData[this.selectedIndex];

@@ -6,7 +6,7 @@
 </ul>
 
 <h2>list2: {{ list2 | json}}</h2>
-<ul [ngxHmDnd]="'group-1'" [sourceData]="list2">
+<ul [ngxHmDnd]="'group-2'" [sourceData]="list2">
   <ng-container *ngIf="list2.length>0;else ee">
       <li *ngFor="let item of list2; let i = index;">
           {{item}}
