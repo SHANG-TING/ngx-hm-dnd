@@ -14,6 +14,8 @@ enum MOVE_TYPE {
 export class NgxHmDndDirective implements OnInit, AfterViewInit {
   @Input() public ngxHmDnd: string;
   @Input() public sourceData: any[];
+  @Input() public selectedNodeClass: string;
+  @Input() public movingNodeClass: string;
   private container: HTMLElement;
   private selectedNode: HTMLElement;
   private movingNode: HTMLElement;
@@ -54,14 +56,11 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
     hm.get('pan').set({ direction: Hammer.DIRECTION_ALL });
 
     hm.on('panstart', (event: HammerInput) => {
-      console.log('!');
-      // console.info('panstart', event.target);
-      // console.log(this.service.get());
       event.preventDefault();
 
       this.selectedNode = event.target;
       this.selectedIndex = this.nowIndex = this.getIndex(this.container.querySelectorAll('*:not(#moving_clone_obj)'), event.target);
-      console.log('this.selectedIndex: ', this.selectedIndex);
+      // console.log('this.selectedIndex: ', this.selectedIndex);
 
       if (this.selectedIndex < 0) {
         hm.stop(true);
@@ -73,9 +72,12 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
         Math.abs(this.selectedNode.getBoundingClientRect().top - event.center.y));
       this.movingNode.style.width = `${this.selectedNode.offsetWidth}px`;
 
-      // this._renderer.addClass(this.selectNode, this.selectedClass);
-      this.selectedNode.style.borderColor = '#00ffcc';
-      this.selectedNode.style.borderStyle = 'solid';
+      if (this.selectedNodeClass) {
+        this._renderer.addClass(this.selectedNode, this.selectedNodeClass);
+      } else {
+        this.selectedNode.style.borderColor = '#00ffcc';
+        this.selectedNode.style.borderStyle = 'solid';
+      }
     });
 
     hm.on('panmove', (event: HammerInput) => {
@@ -84,15 +86,6 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
       this.movingNode.style.transform = `translate(${event.deltaX}px, ${event.deltaY}px`;
 
       const currentArea = this.service.get(event, this.ngxHmDnd);
-
-      // const nodeList = container.querySelectorAll('*:not(#moving_clone_obj)') as NodeListOf<HTMLElement>;
-      // for (let i = 0; i < nodeList.length; i++) {
-      //   const node = nodeList[i];
-      //   const rect = node.getBoundingClientRect();
-      //   console.log(`node ${i}. id: ${node.id}`, Math.abs(rect.top - event.center.x), Math.abs(rect.bottom - event.center.x));
-      // }
-
-
 
       elementsFromPoint(this.document, event.center.x, event.center.y, (item: HTMLElement) => {
         // return this.container.contains(item);
@@ -136,10 +129,14 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
     });
 
     hm.on('panend', (event) => {
-      this.selectedNode.style.borderColor = '';
-      this.selectedNode.style.borderStyle = '';
       this._renderer.removeChild(this.movingNode.parentNode, this.movingNode);
 
+      if (this.selectedNodeClass) {
+        this._renderer.removeClass(this.selectedNode, this.selectedNodeClass);
+      } else {
+        this.selectedNode.style.borderColor = '';
+        this.selectedNode.style.borderStyle = '';
+      }
 
       if (this.selectedIndex > -1) {
         if (event.target.parentElement === this.container) {
@@ -168,11 +165,8 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
               currentArea.directive.bindingHammer(elm);
             }, 0);
           }
-
         }
       }
-
-
 
       // when move complete clear all unuse variable
       this.selectedNode = undefined;
@@ -184,15 +178,6 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
     return hm;
   }
 
-
-
-
-  // @HostListener('click', ['$event'])
-  // click(e) {
-  //     e.stopPropagation();
-  //     e.preventDefault();
-  // }
-
   private createMovingTag(position, disY) {
     const clnElm = this.selectedNode.cloneNode(true) as HTMLElement;
     clnElm.id = 'moving_clone_obj';
@@ -201,9 +186,13 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
     clnElm.style.position = 'fixed';
     clnElm.style.pointerEvents = 'none';
     clnElm.style.zIndex = '3';
-    clnElm.style.opacity = '0.5';
-    clnElm.style.backgroundColor = 'lightpink';
-    // this._renderer.addClass(clnElm, this.movingClass);
+
+    if (this.movingNodeClass) {
+      this._renderer.addClass(clnElm, this.movingNodeClass);
+    } else {
+      clnElm.style.opacity = '0.5';
+      clnElm.style.backgroundColor = 'lightpink';
+    }
 
     this.container.appendChild(clnElm);
     return clnElm;
@@ -213,11 +202,11 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
     this.priAction = MOVE_TYPE.UP;
 
     if (container) {
-      try {
+      // try {
         container.insertBefore(this.selectedNode, getElm);
-      } catch (e) {
-        console.log(e);
-      }
+      // } catch (e) {
+      //   console.log(e);
+      // }
     } else {
       this.container.insertBefore(this.selectedNode, getElm);
     }
