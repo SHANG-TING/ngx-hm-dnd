@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 
 
 import { AppComponent } from './app.component';
+import { NgxHmDndModule } from './ngx-hm-dnd/ngx-hm-dnd.module';
 
 
 @NgModule({
@@ -10,7 +11,8 @@ import { AppComponent } from './app.component';
     AppComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    NgxHmDndModule
   ],
   providers: [],
   bootstrap: [AppComponent]

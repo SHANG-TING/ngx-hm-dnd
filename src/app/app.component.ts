@@ -7,4 +7,7 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'app';
+  list1 = [1 , 2, 3, 4, 5];
+  list2 = [6, 7, 8, 9, 10];
+  list3 = [11, 12, 13, 14, 15];
 }
