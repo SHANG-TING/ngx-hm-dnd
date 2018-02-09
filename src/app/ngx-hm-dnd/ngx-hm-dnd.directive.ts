@@ -42,7 +42,7 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
       directive: this
     });
 
-    Array.from(this.container.querySelectorAll('*:not(#moving_clone_obj)'))
+    Array.from(this.getElms(this.container))
       .forEach((el: HTMLElement, index: number) => {
         this.bindingHammer(el);
       });
@@ -58,9 +58,12 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
     hm.on('panstart', (event: HammerInput) => {
       event.preventDefault();
 
+      this.selectedIndex = this.nowIndex = this.getIndex(this.getElms(this.container), event.target);
+      // set choiceNode to this start tag
       this.selectedNode = event.target;
-      this.selectedIndex = this.nowIndex = this.getIndex(this.container.querySelectorAll('*:not(#moving_clone_obj)'), event.target);
-      // console.log('this.selectedIndex: ', this.selectedIndex);
+      // get distance from this tag's origin
+      // set this elem style
+      this._renderer.setStyle(this.selectedNode, 'pointerEvents', 'none');
 
       if (this.selectedIndex < 0) {
         hm.stop(true);
@@ -104,7 +107,7 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
         return false;
       }).then((getElm: HTMLElement) => {
         if (this.nowIndex !== -1) {
-          const toIndex = this.getIndex(currentArea.container.querySelectorAll('*:not(#moving_clone_obj)'), getElm);
+          const toIndex = this.getIndex(this.getElms(currentArea.container), getElm);
 
           if (this.nowIndex !== toIndex) {
             if (this.nowIndex > toIndex) {
@@ -129,19 +132,20 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
     });
 
     hm.on('panend', (event) => {
-      this._renderer.removeChild(this.movingNode.parentNode, this.movingNode);
-
       if (this.selectedNodeClass) {
         this._renderer.removeClass(this.selectedNode, this.selectedNodeClass);
       } else {
         this.selectedNode.style.borderColor = '';
         this.selectedNode.style.borderStyle = '';
       }
+      this._renderer.setStyle(this.selectedNode, 'pointerEvents', '');
+
+      this._renderer.removeChild(this.movingNode.parentNode, this.movingNode);
 
       if (this.selectedIndex > -1) {
         if (event.target.parentElement === this.container) {
           const tmp = this.sourceData[this.selectedIndex];
-          const newIndex = this.getIndex(this.container.querySelectorAll('*:not(#moving_clone_obj)'), event.target);
+          const newIndex = this.getIndex(this.getElms(this.container), event.target);
           this.sourceData.splice(this.selectedIndex, 1);
           this.sourceData.splice(newIndex, 0, tmp);
 
@@ -154,14 +158,14 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
             let newIndex = 0;
 
             if (currentArea.data.length > 0) {
-              newIndex = this.getIndex(currentArea.container.querySelectorAll('*:not(#moving_clone_obj)'), event.target);
+              newIndex = this.getIndex(this.getElms(currentArea.container), event.target);
             }
 
             currentArea.data.splice(newIndex, 0, cloneData);
             this.sourceData.splice(this.selectedIndex, 1);
 
             setTimeout(() => {
-              const elm = currentArea.container.querySelectorAll('*:not(#moving_clone_obj)')[newIndex] as HTMLElement;
+              const elm = this.getElms(currentArea.container)[newIndex] as HTMLElement;
               currentArea.directive.bindingHammer(elm);
             }, 0);
           }
@@ -194,7 +198,8 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
       clnElm.style.backgroundColor = 'lightpink';
     }
 
-    this.container.appendChild(clnElm);
+    this._renderer.appendChild(this.container, clnElm);
+    // this.container.appendChild(clnElm);
     return clnElm;
   }
 
@@ -213,12 +218,32 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
 
   }
 
+  /**
+   * 將已選取的 element 移動至 畫面上element的上方
+   * @param getElm
+   */
   private insertAfter(getElm: any) {
     this.priAction = MOVE_TYPE.DOWN;
     insertAfter(this._renderer, this.selectedNode, getElm);
   }
 
-  getIndex(elms, elm): number {
+  /**
+   * 取得下層的element
+   * 排除註解、#moving_clone_obj
+   * @param container
+   */
+  private getElms(container: HTMLElement) {
+    const elems = Array.from(container.childNodes)
+      .filter((x: HTMLElement) => x.tagName && x.id !== 'moving_clone_obj');
+    return elems;
+  }
+
+  /**
+   * 取得自己的element在父層所有element的index
+   * @param elms
+   * @param elm
+   */
+  private getIndex(elms, elm): number {
     let idx = -1;
     for (let i = 0; i < elms.length; i++) {
       if (elms[i] === elm) {

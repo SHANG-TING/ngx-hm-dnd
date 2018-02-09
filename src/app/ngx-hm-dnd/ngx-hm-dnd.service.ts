@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { NgxHmDndDirective } from './ngx-hm-dnd.directive';
 
-interface NgxHmDndInfo {
+export interface NgxHmDndInfo {
   id?: number;
   group: string;
   container: HTMLElement;
@@ -21,7 +21,7 @@ export class NgxHmDndService {
   }
 
   get(event: HammerInput, group: string): NgxHmDndInfo {
-    return this._infos.filter(x => {
+    const areas = this._infos.filter(x => {
       if (x.group !== group) {
         return false;
       }
@@ -30,11 +30,22 @@ export class NgxHmDndService {
 
       return rect.left < event.center.x && event.center.x < rect.right
         && rect.top < event.center.y && event.center.y < rect.bottom;
-    })
-      .shift();
+    });
+
+    // 主要是使用在有樹狀的情況下
+    if (areas.length > 1) {
+      return areas.map(x => {
+        const rect = x.container.getBoundingClientRect();
+        return { size: rect.width * rect.height, area: x };
+      }).sort((a, b) => {
+        return b.size - a.size;
+      }).pop().area;
+    }
+
+    return areas.shift();
   }
 
-  add(info: NgxHmDndInfo): void {
+  add(info: NgxHmDndInfo) {
     info.id = this._infos.length + 1;
     this._infos.push(info);
   }
