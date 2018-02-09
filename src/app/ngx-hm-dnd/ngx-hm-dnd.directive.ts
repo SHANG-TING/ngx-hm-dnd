@@ -1,4 +1,4 @@
-import { Directive, Input, OnInit, AfterViewInit, ElementRef, HostListener, Inject, Renderer2 } from '@angular/core';
+import { Directive, Input, Output, EventEmitter, OnInit, AfterViewInit, ElementRef, HostListener, Inject, Renderer2 } from '@angular/core';
 import { DOCUMENT } from '@angular/platform-browser';
 import { NgxHmDndService, NgxHmDndInfo } from './ngx-hm-dnd.service';
 import { elementsFromPoint, insertAfter } from './ts/element';
@@ -6,6 +6,16 @@ import { elementsFromPoint, insertAfter } from './ts/element';
 enum MOVE_TYPE {
   UP = 'up',
   DOWN = 'down'
+}
+
+export interface IComplete {
+  from: ICompleteInfo;
+  to?: ICompleteInfo;
+}
+
+export interface ICompleteInfo {
+  data: any[];
+  selectedIndex: number;
 }
 
 @Directive({
@@ -17,6 +27,9 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
   @Input() public selectedNodeClass: string;
   @Input() public movingNodeClass: string;
   @Input() public enable = true;
+
+  @Output() public complete = new EventEmitter();
+
   private container: HTMLElement;
   private selectedNode: HTMLElement;
   private movingNode: HTMLElement;
@@ -52,7 +65,6 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
         this.bindingHammer(el);
       });
     }
-
 
   }
 
@@ -120,10 +132,32 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
         return false;
       }).then((getElm: HTMLElement) => {
         if (!currentArea.enable) {
+          const elems = this.getElms(currentArea.container);
+          this.toIndex = this.getIndex(elems, getElm);
           this.toArea = currentArea;
-          this.toIndex = this.getIndex(this.getElms(currentArea.container), getElm);
-          // console.log(this.toIndex);
+
+          elems.forEach((elm: HTMLElement) => {
+            elm.style.borderColor = '';
+            elm.style.borderStyle = '';
+          });
+
+          this.selectedNode.style.borderColor = '';
+          this.selectedNode.style.borderStyle = '';
+
+          getElm.style.borderColor = '#00ffcc';
+          getElm.style.borderStyle = 'solid';
+
           return;
+        }
+
+        if (this.toArea) {
+          const elms = this.getElms(this.toArea.container) as HTMLElement[];
+          const elm = elms[this.toIndex];
+          elm.style.borderColor = '';
+          elm.style.borderStyle = '';
+
+          this.selectedNode.style.borderColor = '#00ffcc';
+          this.selectedNode.style.borderStyle = 'solid';
         }
 
         this.toArea = undefined;
@@ -173,11 +207,7 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
           const newIndex = this.getIndex(this.getElms(this.container), event.target);
           this.sourceData.splice(this.selectedIndex, 1);
           this.sourceData.splice(newIndex, 0, tmp);
-
-          // this.sortComplete.emit(this.sourceObj);
         } else {
-
-
           if (currentArea) {
             const cloneData = this.sourceData[this.selectedIndex];
             let newIndex = 0;
@@ -202,10 +232,22 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
           // console.log(this.toIndex);
           // console.log(this.toArea);
 
+          const elms = this.getElms(this.toArea.container) as HTMLElement[];
+          const elm = elms[this.toIndex];
+          elm.style.borderColor = '';
+          elm.style.borderStyle = '';
+
           // Output Emit
-          const temp = this.sourceData[this.selectedIndex];
-          this.toArea.data[this.toIndex].books.push(temp);
-          this.sourceData.splice(this.selectedIndex, 1);
+          this.complete.emit({
+            from: {
+              data: this.sourceData,
+              selectedIndex: this.getIndex(this.getElms(this.container), event.target)
+            } as ICompleteInfo,
+            to: {
+              data: this.toArea.data,
+              selectedIndex: this.toIndex
+            } as ICompleteInfo
+          } as IComplete);
         }
       }
 

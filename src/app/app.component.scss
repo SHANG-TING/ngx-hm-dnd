@@ -59,6 +59,9 @@ $transition: all .17s cubic-bezier(.4, 0, 1, 1);
   .insta-page {
     padding: 10px;
   }
+  .selected {
+    background-color: yellow;
+  }
 }
 
 .image {
