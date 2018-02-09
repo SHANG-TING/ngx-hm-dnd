@@ -1,6 +1,6 @@
 import { Directive, Input, OnInit, AfterViewInit, ElementRef, HostListener, Inject, Renderer2 } from '@angular/core';
 import { DOCUMENT } from '@angular/platform-browser';
-import { NgxHmDndService } from './ngx-hm-dnd.service';
+import { NgxHmDndService, NgxHmDndInfo } from './ngx-hm-dnd.service';
 import { elementsFromPoint, insertAfter } from './ts/element';
 
 enum MOVE_TYPE {
@@ -16,12 +16,15 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
   @Input() public sourceData: any[];
   @Input() public selectedNodeClass: string;
   @Input() public movingNodeClass: string;
+  @Input() public enable = true;
   private container: HTMLElement;
   private selectedNode: HTMLElement;
   private movingNode: HTMLElement;
   private selectedIndex: number;
   private nowIndex: number;
   private priAction: MOVE_TYPE;
+  private toArea: NgxHmDndInfo;
+  private toIndex: number;
 
   public constructor(
     private el: ElementRef,
@@ -39,13 +42,18 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
       group: this.ngxHmDnd,
       container: this.container,
       data: this.sourceData,
+      enable: this.enable,
       directive: this
     });
 
-    Array.from(this.getElms(this.container))
+    if (this.enable) {
+      Array.from(this.getElms(this.container))
       .forEach((el: HTMLElement, index: number) => {
         this.bindingHammer(el);
       });
+    }
+
+
   }
 
   public bindingHammer(el: HTMLElement) {
@@ -86,8 +94,13 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
     hm.on('panmove', (event: HammerInput) => {
       event.preventDefault();
 
-      this.movingNode.style.transform = `translate(${event.deltaX}px, ${event.deltaY}px`;
-
+      // this.movingNode.style.transform = `translate(${event.center.x}px, ${event.center.y}px`;
+      // console.log(this.movingNode.style.transform);
+      this.movingNode.style.top = `${event.center.y - (event.target.offsetHeight / 2)}px`;
+      this.movingNode.style.left = `${event.center.x - (event.target.offsetWidth / 2)}px`;
+      // console.log('event.deltaY: ', event.deltaY, ', event.deltaX: ', event.deltaX);
+      // console.log('event.center.y: ', event.center.y, ', event.center.x: ', event.center.x);
+      // console.log('width: ', event.target.offsetWidth, ', height:', event.target.offsetHeight);
       const currentArea = this.service.get(event, this.ngxHmDnd);
 
       elementsFromPoint(this.document, event.center.x, event.center.y, (item: HTMLElement) => {
@@ -106,6 +119,16 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
 
         return false;
       }).then((getElm: HTMLElement) => {
+        if (!currentArea.enable) {
+          this.toArea = currentArea;
+          this.toIndex = this.getIndex(this.getElms(currentArea.container), getElm);
+          // console.log(this.toIndex);
+          return;
+        }
+
+        this.toArea = undefined;
+        this.toIndex = undefined;
+
         if (this.nowIndex !== -1) {
           const toIndex = this.getIndex(this.getElms(currentArea.container), getElm);
 
@@ -142,6 +165,8 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
 
       this._renderer.removeChild(this.movingNode.parentNode, this.movingNode);
 
+      const currentArea = this.service.get(event, this.ngxHmDnd);
+
       if (this.selectedIndex > -1) {
         if (event.target.parentElement === this.container) {
           const tmp = this.sourceData[this.selectedIndex];
@@ -151,7 +176,7 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
 
           // this.sortComplete.emit(this.sourceObj);
         } else {
-          const currentArea = this.service.get(event, this.ngxHmDnd);
+
 
           if (currentArea) {
             const cloneData = this.sourceData[this.selectedIndex];
@@ -172,12 +197,26 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
         }
       }
 
+      if (currentArea) {
+        if (!currentArea.enable) {
+          // console.log(this.toIndex);
+          // console.log(this.toArea);
+
+          // Output Emit
+          const temp = this.sourceData[this.selectedIndex];
+          this.toArea.data[this.toIndex].books.push(temp);
+          this.sourceData.splice(this.selectedIndex, 1);
+        }
+      }
+
       // when move complete clear all unuse variable
       this.selectedNode = undefined;
       this.movingNode = undefined;
       this.selectedIndex = undefined;
       this.nowIndex = undefined;
       this.priAction = undefined;
+      this.toIndex = undefined;
+      this.toArea = undefined;
     });
     return hm;
   }

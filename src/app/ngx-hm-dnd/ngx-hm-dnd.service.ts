@@ -7,6 +7,7 @@ export interface NgxHmDndInfo {
   container: HTMLElement;
   data: Array<any>;
   directive: NgxHmDndDirective;
+  enable: boolean;
 }
 
 @Injectable()

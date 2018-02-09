@@ -1,4 +1,4 @@
-<h2>list1: {{ list1 | json}}</h2>
+<!-- <h2>list1: {{ list1 | json}}</h2>
 <ul [ngxHmDnd]="'group-1'" [sourceData]="list1">
   <li *ngFor="let item of list1; let i = index;">
     {{item}}
@@ -6,7 +6,7 @@
 </ul>
 
 <h2>list2: {{ list2 | json}}</h2>
-<ul [ngxHmDnd]="'group-2'" [sourceData]="list2">
+<ul [ngxHmDnd]="'group-1'" [sourceData]="list2">
   <ng-container *ngIf="list2.length>0;else ee">
       <li *ngFor="let item of list2; let i = index;">
           {{item}}
@@ -21,11 +21,34 @@
         fdsfsd
     </li>
   </ng-template>
-</ul>
+</ul> -->
 
-<h2>list3: {{ list3 | json}}</h2>
+<!-- <h2>list3: {{ list3 | json}}</h2>
 <ul [ngxHmDnd]="'group-1'" [sourceData]="list3">
   <li *ngFor="let item of list3; let i = index;">
     {{item}}
   </li>
-</ul>
+</ul> -->
+
+<nav id="nav">
+  <ul [ngxHmDnd]="'group-1'" [sourceData]="bookCategory" [enable]="false">
+    <li *ngFor="let category of bookCategory; let i = index;"
+      [ngClass]="{'selected': selectedIndex === i}"
+      (click)="selectedIndex = i">
+      <a>{{ category.name }}</a>
+    </li>
+  </ul>
+</nav>
+
+<h2>{{ bookCategory[selectedIndex].name }}</h2>
+<div *ngIf="display" class="image-wrapper"
+  [ngxHmDnd]="'group-1'" [sourceData]="bookCategory[selectedIndex].books">
+  <div class="image-item insta-page" *ngFor="let book of bookCategory[selectedIndex].books; let i = index;">
+     <a class="image insta-image">
+       <img alt="image" [src]="book.path" />
+      </a>
+   </div>
+</div>
+<div>
+  {{ bookCategory[selectedIndex].books | json }}
+</div>

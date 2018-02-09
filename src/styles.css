@@ -1,1 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+}
+body {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 18px;
+  line-height: 2.35;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+}
