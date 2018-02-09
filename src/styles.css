@@ -3,6 +3,7 @@ html {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #504b4e;
 }
 body {
   font-family: 'Montserrat', sans-serif;
