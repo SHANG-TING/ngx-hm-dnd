@@ -8,7 +8,8 @@
     "build": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "deploy": "ng build --prod --build-optimizer --base-href https://SHANG-TING.github.io/ngx-hm-dnd/"
   },
   "private": true,
   "dependencies": {
