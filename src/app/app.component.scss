@@ -34,7 +34,7 @@ $transition: all .17s cubic-bezier(.4, 0, 1, 1);
 @for $i from 1 through 10 {
   .image-item {
     // 動畫效果
-    // animation: slide-item .3s ease forwards;
+    animation: slide-item .3s ease forwards;
     // transform: translateY(250px);
     // visibility: hidden;
 
@@ -84,7 +84,7 @@ $transition: all .17s cubic-bezier(.4, 0, 1, 1);
   }
 
   100% {
-    opacity: 1;
+    // opacity: 1;
     transform: translateY(0);
     visibility: visible;
   }
