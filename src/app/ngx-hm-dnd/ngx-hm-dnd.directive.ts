@@ -163,9 +163,13 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
         this.toArea = undefined;
         this.toIndex = undefined;
 
-        if (this.nowIndex !== -1) {
-          const toIndex = this.getIndex(this.getElms(currentArea.container), getElm);
+        let elmSortEnable = 'true';
+        if (event.target.attributes['sortenable']) {
+          elmSortEnable = event.target.attributes['sortenable'].value;
+        }
 
+        if (this.nowIndex !== -1 && elmSortEnable === 'true') {
+          const toIndex = this.getIndex(this.getElms(currentArea.container), getElm);
           if (this.nowIndex !== toIndex) {
             if (this.nowIndex > toIndex) {
               this.insertBefore(getElm, currentArea.container);

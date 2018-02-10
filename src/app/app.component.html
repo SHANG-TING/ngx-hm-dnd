@@ -13,8 +13,9 @@
   [ngxHmDnd]="'group-1'" [sourceData]="bookCategory[selectedIndex].books" (complete)="complete($event)">
   <div class="image-item insta-page"
     *ngFor="let book of bookCategory[selectedIndex].books; let i = index;"
+    [attr.sortEnable]="!book.checked"
     [ngClass]="{'selected': book.checked}"
-    (click)="book.checked = !book.checked">
+    (click)="book.checked = !book.checked" >
      <a class="image insta-image">
        <img alt="image" [src]="book.path" />
       </a>
