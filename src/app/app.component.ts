@@ -12,11 +12,13 @@ export class AppComponent {
     return this._selectedIndex;
   }
   set selectedIndex(val: number) {
-    this._selectedIndex = val;
-    this.display = false;
-    setTimeout(() => {
-      this.display = true;
-    }, 0);
+    if (this._selectedIndex !== val) {
+      this._selectedIndex = val;
+      this.display = false;
+      setTimeout(() => {
+        this.display = true;
+      }, 0);
+    }
   }
   display = true;
   bookCategory = [
@@ -26,11 +28,15 @@ export class AppComponent {
         { name: 'Book 1', checked: false, path: 'https://cdn.scotch.io/scotchy-uploads/2015/12/ng-forward-logo.png' },
         { name: 'Book 2', checked: false, path: 'https://www.primefaces.org/wp-content/uploads/2016/10/primeng.png' },
         { name: 'Book 3', checked: false, path: 'https://angularair.com/logo.png' },
-        { name: 'Book 4', checked: false,
-          path: 'https://mdbootstrap.com/wp-content/themes/mdbootstrap4/content/angular/tutorials/main/img/3.png' },
+        {
+          name: 'Book 4', checked: false,
+          path: 'https://mdbootstrap.com/wp-content/themes/mdbootstrap4/content/angular/tutorials/main/img/3.png'
+        },
         { name: 'Book 5', checked: false, path: 'https://www.infopulse.com/files/images/Angular-20170712-300x300.png' },
-        { name: 'Book 6', checked: false,
-          path: 'https://resources.cloud.genuitec.com/wp-content/uploads/2018/01/authenticationangular-blog.png' },
+        {
+          name: 'Book 6', checked: false,
+          path: 'https://resources.cloud.genuitec.com/wp-content/uploads/2018/01/authenticationangular-blog.png'
+        },
       ]
     },
     {
