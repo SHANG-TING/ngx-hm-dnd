@@ -4,6 +4,7 @@ html {
   text-rendering: optimizeLegibility;
   -moz-osx-font-smoothing: grayscale;
   background-color: #504b4e;
+  height: 100%;
 }
 body {
   font-family: 'Montserrat', sans-serif;
@@ -11,4 +12,5 @@ body {
   line-height: 2.35;
   color: rgba(255, 255, 255, 0.85);
   margin: 0;
+  height: 100%;
 }

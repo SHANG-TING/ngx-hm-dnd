@@ -8,19 +8,30 @@
   </ul>
 </nav>
 
-<h2>{{ bookCategory[selectedIndex].name }}</h2>
-<div *ngIf="display" class="image-wrapper"
-  [ngxHmDnd]="'group-1'" [sourceData]="bookCategory[selectedIndex].books" (complete)="complete($event)">
-  <div class="image-item insta-page"
-    *ngFor="let book of bookCategory[selectedIndex].books; let i = index;"
-    [attr.sortEnable]="!book.checked"
-    [ngClass]="{'selected': book.checked}"
-    (click)="book.checked = !book.checked" >
-     <a class="image insta-image">
-       <img alt="image" [src]="book.path" />
-      </a>
-   </div>
-</div>
-<div>
+<div *ngIf="bookCategory[selectedIndex].books.length > 0" style="padding-top: 90px;">
+    <div *ngIf="display" class="image-wrapper"
+      [ngxHmDnd]="'group-1'" [sourceData]="bookCategory[selectedIndex].books" (complete)="complete($event)">
+      <div class="image-item insta-page"
+        *ngFor="let book of bookCategory[selectedIndex].books; let i = index;"
+        [attr.sortEnable]="!book.checked"
+        [ngClass]="{'selected': book.checked}"
+        (click)="book.checked = !book.checked" >
+         <a class="image insta-image">
+           <img alt="image" [src]="book.path" />
+          </a>
+       </div>
+    </div>
   {{ bookCategory[selectedIndex].books | json }}
 </div>
+
+<div *ngIf="bookCategory[selectedIndex].books.length === 0"
+  style="top: 38%;
+         left: 0;
+         right: 0;
+         bottom: 0;
+         text-align: center;
+         position: absolute;
+         font-size: 64px;">
+  No Data!!
+</div>
+<!-- <img  src="https://www.sitepen.com/blog/wp-content/uploads/2017/09/blog.jpg" alt=""> -->
