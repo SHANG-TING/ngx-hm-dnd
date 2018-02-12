@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IComplete } from './ngx-hm-dnd/ngx-hm-dnd.directive';
+import { IComplete } from './ngx-hm-dnd/ts/model';
 
 @Component({
   selector: 'app-root',

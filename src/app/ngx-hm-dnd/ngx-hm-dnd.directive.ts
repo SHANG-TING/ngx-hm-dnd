@@ -2,20 +2,11 @@ import { Directive, Input, Output, EventEmitter, OnInit, AfterViewInit, ElementR
 import { DOCUMENT } from '@angular/platform-browser';
 import { NgxHmDndService, NgxHmDndInfo } from './ngx-hm-dnd.service';
 import { elementsFromPoint, insertAfter } from './ts/element';
+import { IComplete, ICompleteInfo } from './ts/model';
 
 enum MOVE_TYPE {
   UP = 'up',
   DOWN = 'down'
-}
-
-export interface IComplete {
-  from: ICompleteInfo;
-  to?: ICompleteInfo;
-}
-
-export interface ICompleteInfo {
-  data: any[];
-  selectedIndex: number;
 }
 
 @Directive({
@@ -144,8 +135,12 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
           this.selectedNode.style.borderColor = '';
           this.selectedNode.style.borderStyle = '';
 
-          getElm.style.borderColor = '#00ffcc';
-          getElm.style.borderStyle = 'solid';
+          if (this.selectedNodeClass) {
+            this._renderer.addClass(getElm, this.selectedNodeClass);
+          } else {
+            getElm.style.borderColor = '#00ffcc';
+            getElm.style.borderStyle = 'solid';
+          }
 
           return;
         }
@@ -156,8 +151,12 @@ export class NgxHmDndDirective implements OnInit, AfterViewInit {
           elm.style.borderColor = '';
           elm.style.borderStyle = '';
 
-          this.selectedNode.style.borderColor = '#00ffcc';
-          this.selectedNode.style.borderStyle = 'solid';
+          if (this.selectedNodeClass) {
+            this._renderer.addClass(this.selectedNode, this.selectedNodeClass);
+          } else {
+            this.selectedNode.style.borderColor = '#00ffcc';
+            this.selectedNode.style.borderStyle = 'solid';
+          }
         }
 
         this.toArea = undefined;
