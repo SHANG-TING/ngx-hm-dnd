@@ -1,7 +1,13 @@
 {
+  "$schema": "./node_modules/ng-packagr/package.schema.json",
   "name": "ngx-hm-dnd",
-  "version": "0.0.0",
+  "version": "0.0.3",
   "license": "MIT",
+  "ngPackage": {
+    "lib": {
+      "entryFile": "./src/app/ngx-hm-dnd/index.ts"
+    }
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -9,9 +15,10 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "deploy": "ng build --prod --build-optimizer --base-href https://SHANG-TING.github.io/ngx-hm-dnd/"
+    "deploy": "ng build --prod --build-optimizer --base-href https://SHANG-TING.github.io/ngx-hm-dnd/",
+    "build:npm": "ng-packagr -p package.json"
   },
-  "private": true,
+  "private": false,
   "dependencies": {
     "@angular/animations": "^5.2.0",
     "@angular/common": "^5.2.0",
@@ -25,6 +32,7 @@
     "@types/hammerjs": "^2.0.35",
     "core-js": "^2.4.1",
     "hammerjs": "^2.0.8",
+    "ng-packagr": "^2.0.0",
     "rxjs": "^5.5.6",
     "zone.js": "^0.8.19"
   },
