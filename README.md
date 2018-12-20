@@ -1,6 +1,6 @@
 # NgxHmDnd/BookCateogry
 
-[See ngx-hm-dnd in action!](https://github.com/SHANG-TING/ngx-hm-dnd/tree/bookCategory)
+[See ngx-hm-dnd in action!](https://shang-ting.github.io/ngx-hm-dnd/)
 
 <img src="https://i.imgur.com/U39508Y.gif" width="686">
 
